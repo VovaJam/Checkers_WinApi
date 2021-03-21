@@ -19,11 +19,11 @@ struct Cell
 
 extern Cell board[10][10];
 
-class Checker
+struct Checker
 {
 	Color color;
 	int x, y;
-public:
+
 	bool CanAttack();
 	std::vector<Coordinates> getAttackablePoints();
 
