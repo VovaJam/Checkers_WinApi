@@ -16,7 +16,7 @@ Game::Game()
 	board[2][3] = { NONE, new Checker{BLACK, 2, 3}};
 	board[3][4] = { NONE, new Checker{WHITE, 3, 4} };
 	board[4][5] = { NONE, new Checker{BLACK, 4, 5} };
-	
+	board[8][7] = { NONE, new Checker{WHITE, 8, 7} };
 
 
 	/*for (int i = 0; i < 10; i++)
@@ -92,7 +92,7 @@ std::vector<Coordinates> Checker::getAttackablePoints()
 	}
 	if (!points.size())
 	{
-		int dy = (color ? 1 : -1);
+		int dy = (color ? -1 : 1);
 		for (int dx = -1; dx <= 1; dx += 2)
 		{
 			if (board[x + dx][y + dy].isFree())
