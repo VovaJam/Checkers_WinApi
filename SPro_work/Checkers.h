@@ -26,7 +26,7 @@ struct Checker
 	Color color;
 	int x, y;
 
-	bool CanAttack();
+	bool canAttack();
 	std::vector<Coordinates> getAttackablePoints();
 
 };
@@ -37,7 +37,7 @@ public:
 	bool PlayerColor;
 	Game();
 	void Select(int, int);
-	bool Move(int, int, int, int);
+	void Move(int, int, int, int);
 	void Deselect();
 
 };

@@ -11,28 +11,28 @@ bool Cell::isFree()
 
 Game::Game()
 {
-	PlayerColor = 0;
+	PlayerColor = WHITE;
 
-	board[2][3] = { NONE, new Checker{BLACK, 2, 3}};
-	board[3][4] = { NONE, new Checker{WHITE, 3, 4} };
+	//board[4][5] = { NONE, new Checker{BLACK, 4, 5}};
+	/*board[3][4] = { NONE, new Checker{WHITE, 3, 4} };
 	board[4][5] = { NONE, new Checker{BLACK, 4, 5} };
-	board[8][7] = { NONE, new Checker{WHITE, 8, 7} };
+	board[8][7] = { NONE, new Checker{WHITE, 8, 7} };*/
 
 
-	/*for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		for (int j = 0; j < 4; j++)
 		{
 			if ((i + j) & 0b1)
 			{
-				board[i][j] = { false, 0, NONE };	
+				board[i][j] = { NONE, new Checker{BLACK, i, j} };
 			}
 			else
 			{
-				board[i][9 - j] = { false, 1, NONE };
+				board[i][9 - j] = { NONE, new Checker{WHITE, i, 9 - j} };
 			}
 		}
-	}*/
+	}
 }
 
 void Game::Select(int x, int y)
@@ -50,7 +50,7 @@ void Game::Select(int x, int y)
 	}
 }
 
-bool Checker::CanAttack()
+bool Checker::canAttack()
 {
 	for (int dx = -1; dx <= 1; dx += 2)
 	{
@@ -90,8 +90,20 @@ std::vector<Coordinates> Checker::getAttackablePoints()
 
 		}
 	}
+
 	if (!points.size())
 	{
+		for (int i = 0; i < 10; i++)
+		{
+			for (int j = 0; j < 10; j++)
+			{
+				if (!board[i][j].isFree() && board[i][j].checker->color == color)
+					if (board[i][j].checker->canAttack())
+						return points;
+
+			}
+		}
+
 		int dy = (color ? -1 : 1);
 		for (int dx = -1; dx <= 1; dx += 2)
 		{
@@ -112,5 +124,10 @@ void Game::Deselect()
 			board[i][j].state = NONE;
 		}
 	}
+}
+
+void Game::Move(int x1, int y1, int x2, int y2)
+{
+
 }
 
