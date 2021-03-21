@@ -10,11 +10,13 @@ typedef std::pair<int, int> Coordinates;
 enum CellState { NONE, CHOOSEN, ATTACKABLE };
 enum Color { BLACK, WHITE };
 
+struct Checker;
+
 struct Cell
 {
-	bool isFree = true;
 	CellState state = NONE;
 	Checker* checker = nullptr;
+	bool isFree();
 };
 
 extern Cell board[10][10];

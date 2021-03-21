@@ -263,9 +263,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             for (int j = 0; j < 10; j++)
             {
-                if (!board[i][j].isFree)
+                if (!board[i][j].isFree())
                 {
-                    DrawChecker(hdc, i, j, board[i][j].CheckColor);
+                    DrawChecker(hdc, i, j, board[i][j].checker->color);
                         
                 }
             }

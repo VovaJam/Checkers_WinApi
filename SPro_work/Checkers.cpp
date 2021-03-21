@@ -4,15 +4,19 @@
 
 Cell board[10][10];
 
+bool Cell::isFree()
+{
+	return checker == nullptr;
+}
+
 Game::Game()
 {
 	PlayerColor = 0;
 
-	board[2][3] = { false, 0, NONE };
-	board[5][6] = { false, 1, NONE };
-	board[5][2] = { false, 0, NONE };
-	board[3][4] = { false, 0, NONE };
-	board[4][5] = { false, 0, NONE };
+	board[2][3] = { NONE, new Checker{BLACK, 2, 3}};
+	board[3][4] = { NONE, new Checker{WHITE, 3, 4} };
+	board[4][5] = { NONE, new Checker{BLACK, 4, 5} };
+	
 
 
 	/*for (int i = 0; i < 10; i++)
@@ -33,7 +37,17 @@ Game::Game()
 
 void Game::Select(int x, int y)
 {
+	if (!board[x][y].isFree())
+	{ 
+		board[x][y].state = CHOOSEN;
+		
 	
+	 auto points = board[x][y].checker->getAttackablePoints();
+		for (auto p: points)
+		{
+			board[p.first][p.second].state = ATTACKABLE;
+		}
+	}
 }
 
 bool Checker::CanAttack()
@@ -47,8 +61,8 @@ bool Checker::CanAttack()
 			if (!(dy + y >= 0 && dy + y < 10)) continue;
 			if (!(2 * dy + y >= 0 && 2 * dy + y < 10)) continue;
 
-			if (board[x + 2 * dx][y + 2 * dy].isFree
-				&& !board[x + dx][y + dy].isFree
+			if (board[x + 2 * dx][y + 2 * dy].isFree()
+				&& !board[x + dx][y + dy].isFree()
 				&& board[x + dx][y + dy].checker->color != color)
 				return true;
 		}
@@ -69,8 +83,8 @@ std::vector<Coordinates> Checker::getAttackablePoints()
 			if (!(dy + y >= 0 && dy + y < 10)) continue;
 			if (!(2 * dy + y >= 0 && 2 * dy + y < 10)) continue;
 
-			if (board[x + 2 * dx][y + 2 * dy].isFree
-				&& !board[x + dx][y + dy].isFree
+			if (board[x + 2 * dx][y + 2 * dy].isFree()
+				&& !board[x + dx][y + dy].isFree()
 				&& board[x + dx][y + dy].checker->color != color)
 				points.push_back(Coordinates(x + 2 * dx, y + 2 * dy));
 
@@ -81,7 +95,7 @@ std::vector<Coordinates> Checker::getAttackablePoints()
 		int dy = (color ? 1 : -1);
 		for (int dx = -1; dx <= 1; dx += 2)
 		{
-			if (board[x + dx][y + dy].isFree)
+			if (board[x + dx][y + dy].isFree())
 				points.push_back(Coordinates(x + dx, y + dy));
 		}
 	}
