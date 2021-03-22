@@ -34,7 +34,7 @@ struct Checker
 class Game
 {
 public:
-	bool PlayerColor;
+	bool playerColor;
 	Game();
 	void Select(int, int);
 	void Move(int, int, int, int);

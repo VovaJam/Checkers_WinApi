@@ -228,9 +228,10 @@ void DrawChecker(HDC hdc, int x, int y, bool color)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static HBITMAP hBoardBitmap;
-    static POINT UserSelect;
+    static POINT userSelect;
     static Game controller;
     static bool isChoosen;
+    static POINT lastSelect;
 
     static int dx = 35, dy = 35;
     switch (message)
@@ -277,21 +278,40 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_LBUTTONDOWN:
     {
-        GetCursorPos(&UserSelect);
-        ScreenToClient(hWnd, &UserSelect);
-        UserSelect.x = (UserSelect.x - 35) / 70;
-        UserSelect.y = (UserSelect.y - 35) / 70;
-
-        if(isChoosen && UserSelect.x < 10 && UserSelect.y < 10)
+        GetCursorPos(&userSelect);
+        ScreenToClient(hWnd, &userSelect);
+        userSelect.x = (userSelect.x - 35) / 70;
+        userSelect.y = (userSelect.y - 35) / 70;
+        
+        if(isChoosen && userSelect.x < 10 && userSelect.y < 10)
         {
+            
+            switch (board[userSelect.x][userSelect.y].state)
+            {
+            case ATTACKABLE:
+                controller.Move(lastSelect.x, lastSelect.y, userSelect.x, userSelect.y);
+                break;
+                }
               controller.Deselect();
               isChoosen = !isChoosen;
         }
-        if (UserSelect.x < 10 && UserSelect.y < 10)
-        {
-            controller.Select(UserSelect.x, UserSelect.y);
-            isChoosen = !isChoosen;
-        }
+            if (userSelect.x < 10 && userSelect.y < 10)
+            {
+                if (board[userSelect.x][userSelect.y].checker->color == controller.playerColor)
+                {
+                    controller.Select(userSelect.x, userSelect.y);
+                                      lastSelect = userSelect;
+                                      isChoosen = !isChoosen;
+                }
+                else
+                {
+                    controller.Deselect();
+
+                }
+                  
+            }
+
+
 
         InvalidateRect(hWnd, NULL, FALSE);
     }

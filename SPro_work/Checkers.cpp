@@ -11,7 +11,7 @@ bool Cell::isFree()
 
 Game::Game()
 {
-	PlayerColor = WHITE;
+	playerColor = WHITE;
 
 	//board[4][5] = { NONE, new Checker{BLACK, 4, 5}};
 	/*board[3][4] = { NONE, new Checker{WHITE, 3, 4} };
@@ -128,6 +128,22 @@ void Game::Deselect()
 
 void Game::Move(int x1, int y1, int x2, int y2)
 {
+	board[x2][y2] = { NONE, board[x1][y1].checker };
+	board[x1][y1].checker->x = x2;
+	board[x1][y1].checker->y = y2;
+	board[x1][y1] = { NONE, nullptr };
+
+	if (abs(x1 - x2) == 2)
+	{
+		int x = (x1 + x2) / 2;
+		int y = (y1 + y2) / 2;
+		if (board[x][y].checker)
+			delete board[x][y].checker;
+		board[x][y] = { NONE, nullptr };
+		if (!board[x2][y2].checker->canAttack())
+			playerColor = !playerColor;
+	}
+	playerColor = !playerColor;
 
 }
 
