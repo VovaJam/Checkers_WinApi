@@ -274,7 +274,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case ATTACKABLE:
                 controller.Move(lastSelect.x, lastSelect.y, userSelect.x, userSelect.y);
                 break;
-                }
+            }
               controller.Deselect();
               isChoosen = !isChoosen;
         }
