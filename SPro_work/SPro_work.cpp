@@ -295,19 +295,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
               controller.Deselect();
               isChoosen = !isChoosen;
         }
+    
             if (userSelect.x < 10 && userSelect.y < 10)
             {
-                if (board[userSelect.x][userSelect.y].checker->color == controller.playerColor)
-                {
-                    controller.Select(userSelect.x, userSelect.y);
-                                      lastSelect = userSelect;
-                                      isChoosen = !isChoosen;
-                }
-                else
-                {
-                    controller.Deselect();
+                if (board[userSelect.x][userSelect.y].checker)
+                    if (board[userSelect.x][userSelect.y].checker->color == controller.playerColor)
+                    {
+                        controller.Select(userSelect.x, userSelect.y);
+                                          lastSelect = userSelect;
+                                          isChoosen = !isChoosen;
+                    }
+                    else
+                    {
+                        controller.Deselect();
 
-                }
+                    }
                   
             }
 

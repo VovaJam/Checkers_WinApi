@@ -9,6 +9,15 @@ bool Cell::isFree()
 	return checker == nullptr;
 }
 
+Checker::Checker(Color color, int x, int y)
+{
+	this->color = color;
+	this->x = x;
+	this->y = y;
+	printf("ÒÓÊÀÍÛ");
+	fflush(stdout);
+}
+
 Game::Game()
 {
 	playerColor = WHITE;
@@ -128,12 +137,14 @@ void Game::Deselect()
 
 void Game::Move(int x1, int y1, int x2, int y2)
 {
+	//if (typeid(*zaklad) == typeid (ConcertHall))
+
 	board[x2][y2] = { NONE, board[x1][y1].checker };
 	board[x1][y1].checker->x = x2;
 	board[x1][y1].checker->y = y2;
 	board[x1][y1] = { NONE, nullptr };
 
-	if (abs(x1 - x2) == 2)
+	if (abs(x1 - x2) >= 2)
 	{
 		int x = (x1 + x2) / 2;
 		int y = (y1 + y2) / 2;
@@ -146,4 +157,21 @@ void Game::Move(int x1, int y1, int x2, int y2)
 	playerColor = !playerColor;
 
 }
+
+//bool King::canAttack()
+//{
+//	for ()
+//	{
+//		for ()
+//		{
+//			if (!(dx + x >= 0 && dx + x < 10)) continue;
+//			if (!(2 * dx + x >= 0 && 2 * dx + x < 10)) continue;
+//			if (!(dy + y >= 0 && dy + y < 10)) continue;
+//			if (!(2 * dy + y >= 0 && 2 * dy + y < 10)) continue;
+//
+//			
+//		}
+//	}
+//	return false;
+//}
 

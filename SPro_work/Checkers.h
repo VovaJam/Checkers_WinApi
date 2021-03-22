@@ -26,10 +26,18 @@ struct Checker
 	Color color;
 	int x, y;
 
-	bool canAttack();
-	std::vector<Coordinates> getAttackablePoints();
-
+	Checker(Color, int, int);
+	virtual bool canAttack();
+	virtual std::vector<Coordinates> getAttackablePoints();
 };
+
+
+struct King : public Checker
+{
+	virtual bool canAttack();
+	virtual std::vector<Coordinates> getAttackablePoints();
+};
+
 
 class Game
 {
