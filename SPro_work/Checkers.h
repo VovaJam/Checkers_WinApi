@@ -34,7 +34,8 @@ struct Checker
 
 struct King : public Checker
 {
-	virtual bool canAttack();
+	King(Color c, int x, int y) :Checker(c, x, y) {}
+	bool canAttack() override;
 	virtual std::vector<Coordinates> getAttackablePoints();
 };
 

@@ -20,9 +20,9 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+    _In_opt_ HINSTANCE hPrevInstance,
+    _In_ LPWSTR    lpCmdLine,
+    _In_ int       nCmdShow)
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
@@ -35,7 +35,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MyRegisterClass(hInstance);
 
     // Выполнить инициализацию приложения:
-    if (!InitInstance (hInstance, nCmdShow))
+    if (!InitInstance(hInstance, nCmdShow))
     {
         return FALSE;
     }
@@ -54,7 +54,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
     }
 
-    return (int) msg.wParam;
+    return (int)msg.wParam;
 }
 
 
@@ -111,29 +111,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    UpdateWindow(hWnd);
 
    return TRUE;
-}
-
-void DrawBitmap(HDC hdc, HBITMAP hBitmap, int xStart, int yStart, DWORD rop = SRCCOPY)
-{
-    BITMAP bm;
-    HDC hdcMem;
-    DWORD dwSize;
-    POINT ptSize, ptOrg;
-    hdcMem = CreateCompatibleDC(hdc);
-    SelectObject(hdcMem, hBitmap);
-    SetMapMode(hdcMem, GetMapMode(hdc));
-    GetObject(hBitmap, sizeof(BITMAP), (LPVOID)&bm);
-    ptSize.x = bm.bmWidth;
-    ptSize.y = bm.bmHeight;
-    DPtoLP(hdc, &ptSize, 1);
-    ptOrg.x = 0;
-    ptOrg.y = 0;
-    DPtoLP(hdcMem, &ptOrg, 1);
-    BitBlt(
-        hdc, xStart, yStart, ptSize.x, ptSize.y,
-        hdcMem, ptOrg.x, ptOrg.y, rop
-    );
-    DeleteDC(hdcMem);
 }
 
 void DrawBoard(HDC hdc, int dx, int dy, int size = 70)
@@ -205,6 +182,12 @@ void DrawChecker(HDC hdc, int x, int y, bool color)
     SelectObject(hdc, Brush1);
     Ellipse(hdc, 54 + x * 70, 54 + y * 70, 87 + x * 70, 87 + y * 70);
 
+    if (typeid(*board[x][y].checker) == typeid (King))
+    {
+        SelectObject(hdc, Brush2);
+        Ellipse(hdc, 54 + x * 70, 54 + y * 70, 87 + x * 70, 87 + y * 70);
+    }
+   
     DeleteObject(Brush1);
     DeleteObject(Brush2);
 }

@@ -14,21 +14,20 @@ Checker::Checker(Color color, int x, int y)
 	this->color = color;
 	this->x = x;
 	this->y = y;
-	printf("“” ¿Õ€");
-	fflush(stdout);
 }
 
 Game::Game()
 {
 	playerColor = WHITE;
 
-	//board[4][5] = { NONE, new Checker{BLACK, 4, 5}};
-	/*board[3][4] = { NONE, new Checker{WHITE, 3, 4} };
-	board[4][5] = { NONE, new Checker{BLACK, 4, 5} };
-	board[8][7] = { NONE, new Checker{WHITE, 8, 7} };*/
+	board[4][5] = { NONE, new King{WHITE, 4, 5}};
+	board[1][2] = { NONE, new Checker{BLACK, 1, 2} };
+	board[8][9] = { NONE, new Checker{BLACK, 8, 9} };
+	board[1][8] = { NONE, new Checker{BLACK, 1, 8} };
+	board[1][8] = { NONE, new Checker{BLACK, 7, 2} };
 
 
-	for (int i = 0; i < 10; i++)
+	/*for (int i = 0; i < 10; i++)
 	{
 		for (int j = 0; j < 4; j++)
 		{
@@ -41,7 +40,7 @@ Game::Game()
 				board[i][9 - j] = { NONE, new Checker{WHITE, i, 9 - j} };
 			}
 		}
-	}
+	}*/
 }
 
 void Game::Select(int x, int y)
@@ -158,7 +157,79 @@ void Game::Move(int x1, int y1, int x2, int y2)
 
 }
 
-//bool King::canAttack()
+std::vector<Coordinates> King::getAttackablePoints()
+{
+	std::vector<Coordinates> points;
+
+	for (int k = 2; k < 10; k++)
+	{
+		for (int dx = -1; dx <= 1; dx += 2)
+		{
+			if (x + k * dx < 0 || x + k * dx > 9) continue;
+			if (!(dx + x >= 0 && dx + x < 10)) continue;
+			for (int dy = -1; dy <= 1; dy += 2)
+			{
+				if (y + k * dx < 0 || y + k * dx > 9) continue;
+
+				if (!(dy + y >= 0 && dy + y < 10)) continue;
+
+
+				if (board[x + k * dx][y + k * dy].isFree()
+					&& !board[x + (k - 1) * dx][y + (k - 1) * dy].isFree()
+					&& board[x + (k - 1) * dx][y + (k - 1) * dy].checker->color != color)
+					points.push_back(Coordinates(x + k * dx, y + k * dy));
+			}
+		}
+	}
+
+	if (!points.size())
+	{
+		for (int i = 0; i < 10; i++)
+		{
+			for (int j = 0; j < 10; j++)
+			{
+				if (!board[i][j].isFree() && board[i][j].checker->color == color)
+					if (board[i][j].checker->canAttack())
+						return points;
+
+			}
+		}
+
+		int dy = (color ? -1 : 1);
+		for (int dx = -1; dx <= 1; dx += 2)
+		{
+			if (board[x + dx][y + dy].isFree())
+				points.push_back(Coordinates(x + dx, y + dy));
+		}
+	}
+	return points;
+}
+
+bool King::canAttack()
+{
+	for (int k = 2; k < 10; k++)
+	{
+		for (int dx = -1; dx <= 1; dx += 2)
+			{
+			if (x + k * dx < 0 || x + k * dx > 9) continue;
+			if (!(dx + x >= 0 && dx + x < 10)) continue;
+				for (int dy = -1; dy <= 1; dy += 2)
+				{
+					if (y + k * dx < 0 || y + k * dx > 9) continue;
+					
+					if (!(dy + y >= 0 && dy + y < 10)) continue;
+					
+
+					if (board[x + k * dx][y + k * dy].isFree()
+						&& !board[x + (k - 1) * dx][y + (k - 1) * dy].isFree()
+						&& board[x + (k - 1) * dx][y + (k - 1) * dy].checker->color != color)
+						return true;
+				}
+			}
+	}
+	
+	return false;
+}
 //{
 //	for ()
 //	{
