@@ -140,7 +140,7 @@ void Game::Move(int x1, int y1, int x2, int y2)
 		if (board[x][y].checker)
 			delete board[x][y].checker;
 		board[x][y] = { NONE, nullptr };
-		if (!board[x2][y2].checker->canAttack())
+		if (board[x2][y2].checker->canAttack())
 			playerColor = !playerColor;
 	}
 	playerColor = !playerColor;
