@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Checkers.h"
-
+#define IS_DEBUG 0
 Cell board[10][10];
 
 bool Cell::isFree()
@@ -18,16 +18,26 @@ Checker::Checker(Color color, int x, int y)
 
 Game::Game()
 {
+	
+
 	playerColor = WHITE;
+	
+#if IS_DEBUG
+
 
 	board[4][5] = { NONE, new King{WHITE, 4, 5}};
 	board[0][1] = { NONE, new Checker{WHITE, 0, 1} };
 	board[7][8] = { NONE, new Checker{BLACK, 7, 8} };
 	board[1][8] = { NONE, new Checker{BLACK, 1, 8} };
 	board[7][2] = { NONE, new Checker{BLACK, 7, 2} };
+		
+	amount[BLACK] = 3;
+	amount[WHITE] = 2;
+#else
+	amount[BLACK] = 20;
+	amount[WHITE] = 20;
 
-
-	/*for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		for (int j = 0; j < 4; j++)
 		{
@@ -40,7 +50,8 @@ Game::Game()
 				board[i][9 - j] = { NONE, new Checker{WHITE, i, 9 - j} };
 			}
 		}
-	}*/
+	}
+#endif
 }
 
 void Game::Select(int x, int y)
@@ -136,6 +147,8 @@ void Game::Deselect()
 
 void Game::Move(int x1, int y1, int x2, int y2)
 {
+	if (board[x2][y2].state != ATTACKABLE) return;
+	
 
 	board[x2][y2] = { NONE, board[x1][y1].checker };
 	board[x1][y1].checker->x = x2;
@@ -150,7 +163,11 @@ void Game::Move(int x1, int y1, int x2, int y2)
 		int x = x2 + dx;//(x1 + x2) / length;
 		int y = y2 + dy; // (y1 + y2) / length;
 		if (board[x][y].checker)
+		{
+			amount[board[x][y].checker->color]--;
 			delete board[x][y].checker;
+		}
+			
 		board[x][y] = { NONE, nullptr };
 		if (board[x2][y2].checker->canAttack())
 			return;	
@@ -170,6 +187,25 @@ void Game::Move(int x1, int y1, int x2, int y2)
 	}
 	//playerColor = !playerColor;
 
+}
+
+bool Game::IsGameOver()
+{
+	return !(amount[WHITE] && amount[BLACK]);
+		
+}
+
+void Game::Restart()
+{
+	for (int i = 0; i < 10; i++)
+		for (int j = 0; j < 10; j++)
+			if (board[i][j].isFree())
+			{
+				delete board[i][j].checker;
+				board[i][j].checker = nullptr;
+			}
+				
+	Game();
 }
 
 std::vector<Coordinates> King::getAttackablePoints()

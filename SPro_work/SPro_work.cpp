@@ -78,7 +78,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_SPROWORK));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground  = CreateSolidBrush(RGB(243, 221, 205));
-    wcex.lpszMenuName = NULL;//MAKEINTRESOURCEW(IDC_SPROWORK);
+    wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_SPROWORK);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
@@ -149,7 +149,6 @@ void DrawBoard(HDC hdc, int dx, int dy, int size = 70)
         }
     }
     
-    //DeleteObject(BoardBrush);
     DeleteObject(DarkBrush);
     DeleteObject(LightBrush);
     DeleteObject(GreenBrush);
@@ -158,15 +157,17 @@ void DrawBoard(HDC hdc, int dx, int dy, int size = 70)
 
 
 
-void DrawChecker(HDC hdc, int x, int y, bool color)
+void DrawChecker(HDC hdc, int x, int y)
 {
     HBRUSH Brush1, Brush2;
 
-    if (color) {
+    if (board[x][y].checker->color)
+    {
          Brush1 = CreateSolidBrush(RGB(230, 230, 230));
          Brush2 = CreateSolidBrush(RGB(20, 20, 20));
     }
-    else {
+    else 
+    {
          Brush1 = CreateSolidBrush(RGB(20, 20, 20));
          Brush2 = CreateSolidBrush(RGB(230, 230, 230));
     }
@@ -249,12 +250,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             {
                 if (!board[i][j].isFree())
                 {
-                    DrawChecker(hdc, i, j, board[i][j].checker->color);
-                        
+                    DrawChecker(hdc, i, j);  
                 }
             }
         }
-       
+        if (controller.IsGameOver())
+        { 
+            if (MessageBox(hWnd, L"Гра завершена. Бажаєте почати наново?", L"Чудова партія", MB_YESNO) == IDYES)
+            {
+                MessageBox(hWnd, L"Privat: 4149 4991 3092 2337 \nMonobank: 5375 4141 2115 1350", L"За ідею автору", MB_OK);
+                controller.Restart();
+            }
+        }
         EndPaint(hWnd, &ps);
     }
     break;
@@ -268,11 +275,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         
         if(isChoosen && userSelect.x < 10 && userSelect.y < 10)
         {
-            
-            if(board[userSelect.x][userSelect.y].state == ATTACKABLE)
-            {
-                controller.Move(lastSelect.x, lastSelect.y, userSelect.x, userSelect.y);
-            }
+              controller.Move(lastSelect.x, lastSelect.y, userSelect.x, userSelect.y);
+           
               controller.Deselect();
               isChoosen = !isChoosen;
         }

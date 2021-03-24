@@ -42,12 +42,15 @@ struct King : public Checker
 
 class Game
 {
+	int amount[2];
 public:
+	
 	bool playerColor;
 	Game();
 	void Select(int, int);
 	void Move(int, int, int, int);
 	void Deselect();
-
+	void Restart();
+	bool IsGameOver();
 };
 
