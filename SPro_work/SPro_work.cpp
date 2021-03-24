@@ -269,11 +269,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         if(isChoosen && userSelect.x < 10 && userSelect.y < 10)
         {
             
-            switch (board[userSelect.x][userSelect.y].state)
+            if(board[userSelect.x][userSelect.y].state == ATTACKABLE)
             {
-            case ATTACKABLE:
                 controller.Move(lastSelect.x, lastSelect.y, userSelect.x, userSelect.y);
-                break;
             }
               controller.Deselect();
               isChoosen = !isChoosen;
@@ -299,19 +297,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 
         InvalidateRect(hWnd, NULL, FALSE);
+        UpdateWindow(hWnd);
     }
     break;
     case WM_CREATE:
     {
-        //hBoardBitmap = (HBITMAP)LoadImage(NULL, TEXT("CheckBoard.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-       
-        //hbrush = CreateSolidBrush(RGB(100, 74, 0));
+     
     }
     break;
 
     case WM_DESTROY:
     {
-        //DeleteObject(hBoardBitmap);
       
         PostQuitMessage(0);
     }

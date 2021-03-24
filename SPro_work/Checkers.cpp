@@ -20,14 +20,14 @@ Game::Game()
 {
 	playerColor = WHITE;
 
-	//board[4][5] = { NONE, new King{WHITE, 4, 5}};
-	//board[1][1] = { NONE, new Checker{WHITE, 1, 1} };
-	//board[8][8] = { NONE, new Checker{BLACK, 8, 8} };
-	//board[1][8] = { NONE, new Checker{BLACK, 1, 8} };
-	//board[1][8] = { NONE, new Checker{BLACK, 7, 2} };
+	board[4][5] = { NONE, new King{WHITE, 4, 5}};
+	board[0][1] = { NONE, new Checker{WHITE, 0, 1} };
+	board[7][8] = { NONE, new Checker{BLACK, 7, 8} };
+	board[1][8] = { NONE, new Checker{BLACK, 1, 8} };
+	board[7][2] = { NONE, new Checker{BLACK, 7, 2} };
 
 
-	for (int i = 0; i < 10; i++)
+	/*for (int i = 0; i < 10; i++)
 	{
 		for (int j = 0; j < 4; j++)
 		{
@@ -40,7 +40,7 @@ Game::Game()
 				board[i][9 - j] = { NONE, new Checker{WHITE, i, 9 - j} };
 			}
 		}
-	}
+	}*/
 }
 
 void Game::Select(int x, int y)
@@ -136,7 +136,6 @@ void Game::Deselect()
 
 void Game::Move(int x1, int y1, int x2, int y2)
 {
-	//if (typeid(*zaklad) == typeid (ConcertHall))
 
 	board[x2][y2] = { NONE, board[x1][y1].checker };
 	board[x1][y1].checker->x = x2;
@@ -154,9 +153,9 @@ void Game::Move(int x1, int y1, int x2, int y2)
 			delete board[x][y].checker;
 		board[x][y] = { NONE, nullptr };
 		if (board[x2][y2].checker->canAttack())
-			return;
-		
+			return;	
 	}
+
 	playerColor = !playerColor;
 
 	if (board[x2][y2].checker->color == BLACK && y2 == 9)
@@ -164,7 +163,6 @@ void Game::Move(int x1, int y1, int x2, int y2)
 		delete board[x2][y2].checker;
 		board[x2][y2] = { NONE, new King{BLACK, x2, y2} };
 	}
-
 	else if (board[x2][y2].checker->color == WHITE && y2 == 0)
 	{
 		delete board[x2][y2].checker;
@@ -186,7 +184,7 @@ std::vector<Coordinates> King::getAttackablePoints()
 			if (!(dx + x >= 0 && dx + x < 10)) continue;
 			for (int dy = -1; dy <= 1; dy += 2)
 			{
-				if (y + k * dx < 0 || y + k * dx > 9) continue;
+				if (y + k * dy < 0 || y + k * dy > 9) continue;
 
 				if (!(dy + y >= 0 && dy + y < 10)) continue;
 
@@ -220,7 +218,7 @@ std::vector<Coordinates> King::getAttackablePoints()
 				if (!(dx + x >= 0 && dx + x < 10)) continue;
 				for (int dy = -1; dy <= 1; dy += 2)
 				{
-					if (y + k * dx < 0 || y + k * dx > 9) continue;
+					if (y + k * dy < 0 || y + k * dy > 9) continue;
 
 					if (!(dy + y >= 0 && dy + y < 10)) continue;
 					if (board[x + k * dx][y + k * dy].isFree())
@@ -249,7 +247,6 @@ bool King::canAttack()
 				for (int dy = -1; dy <= 1; dy += 2)
 				{
 					if (y + k * dx < 0 || y + k * dx > 9) continue;
-					
 					if (!(dy + y >= 0 && dy + y < 10)) continue;
 					
 
