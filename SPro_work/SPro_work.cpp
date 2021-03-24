@@ -276,7 +276,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
             else
             {
-                ShellExecute(NULL, L"open", L"https://www.youtube.com/watch?v=oHg5SJYRHA0", NULL, NULL, SW_SHOWNORMAL);
+                ShellExecute(NULL, L"open", L"https://youtu.be/VJCtRXrXkQU", NULL, NULL, SW_SHOWNORMAL);
             }
         }
         EndPaint(hWnd, &ps);
