@@ -47,6 +47,7 @@ public:
 	
 	bool playerColor;
 	Game();
+	void Start();
 	void Select(int, int);
 	void Move(int, int, int, int);
 	void Deselect();

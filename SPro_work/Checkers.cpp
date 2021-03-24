@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Checkers.h"
-#define IS_DEBUG 0
+#define IS_DEBUG 1
 Cell board[10][10];
 
 bool Cell::isFree()
@@ -18,40 +18,7 @@ Checker::Checker(Color color, int x, int y)
 
 Game::Game()
 {
-	
-
-	playerColor = WHITE;
-	
-#if IS_DEBUG
-
-
-	board[4][5] = { NONE, new King{WHITE, 4, 5}};
-	board[0][1] = { NONE, new Checker{WHITE, 0, 1} };
-	board[7][8] = { NONE, new Checker{BLACK, 7, 8} };
-	board[1][8] = { NONE, new Checker{BLACK, 1, 8} };
-	board[7][2] = { NONE, new Checker{BLACK, 7, 2} };
-		
-	amount[BLACK] = 3;
-	amount[WHITE] = 2;
-#else
-	amount[BLACK] = 20;
-	amount[WHITE] = 20;
-
-	for (int i = 0; i < 10; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			if ((i + j) & 0b1)
-			{
-				board[i][j] = { NONE, new Checker{BLACK, i, j} };
-			}
-			else
-			{
-				board[i][9 - j] = { NONE, new Checker{WHITE, i, 9 - j} };
-			}
-		}
-	}
-#endif
+	Start();
 }
 
 void Game::Select(int x, int y)
@@ -195,17 +162,52 @@ bool Game::IsGameOver()
 		
 }
 
+void Game::Start()
+{
+	playerColor = WHITE;
+#if IS_DEBUG
+
+	amount[BLACK] = 3;
+	amount[WHITE] = 2;
+
+	board[4][5] = { NONE, new King{WHITE, 4, 5} };
+	board[0][1] = { NONE, new Checker{WHITE, 0, 1} };
+	board[7][8] = { NONE, new Checker{BLACK, 7, 8} };
+	board[1][8] = { NONE, new Checker{BLACK, 1, 8} };
+	board[7][2] = { NONE, new Checker{BLACK, 7, 2} };
+
+#else
+
+	amount[BLACK] = 20;
+	amount[WHITE] = 20;
+
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			if ((i + j) & 0b1)
+			{
+				board[i][j] = { NONE, new Checker{BLACK, i, j} };
+			}
+			else
+			{
+				board[i][9 - j] = { NONE, new Checker{WHITE, i, 9 - j} };
+			}
+		}
+	}
+#endif
+}
+
 void Game::Restart()
 {
 	for (int i = 0; i < 10; i++)
 		for (int j = 0; j < 10; j++)
-			if (board[i][j].isFree())
+			if (!board[i][j].isFree())
 			{
 				delete board[i][j].checker;
 				board[i][j].checker = nullptr;
 			}
-				
-	Game();
+	Start();
 }
 
 std::vector<Coordinates> King::getAttackablePoints()

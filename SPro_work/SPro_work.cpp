@@ -239,11 +239,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     break;
     case WM_PAINT:
     {
+
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hWnd, &ps);
        // DrawBitmap(hdc, hBoardBitmap, 0, 0);
         DrawBoard(hdc, dx, dy);
-        
+        SetBkMode(hdc, TRANSPARENT);
+        TextOut(hdc, 0, 5, L"Ходять:", 8);
+        HBRUSH playerBrush = controller.playerColor ? CreateSolidBrush(RGB(230, 230, 230))
+                                                   : CreateSolidBrush(RGB(10, 10, 10));
+        SelectObject(hdc, playerBrush);
+        Ellipse(hdc, 55, 4, 75, 24);
+        DeleteObject(playerBrush);
+       /* char txt[3];
+        _itoa_s(controller.amount[BLACK], txt, 10);
+        TextOutA(hdc, 0, 0, txt, 3);
+        _itoa_s(controller.amount[WHITE], txt, 10);
+        TextOutA(hdc, 0, 20, txt, 3);*/
         for (int i = 0; i < 10; i++)
         {
             for (int j = 0; j < 10; j++)
@@ -258,8 +270,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         { 
             if (MessageBox(hWnd, L"Гра завершена. Бажаєте почати наново?", L"Чудова партія", MB_YESNO) == IDYES)
             {
-                MessageBox(hWnd, L"Privat: 4149 4991 3092 2337 \nMonobank: 5375 4141 2115 1350", L"За ідею автору", MB_OK);
+                //MessageBox(hWnd, L"Privat: 4149 4991 3092 2337 \nMonobank: 5375 4141 2115 1350", L"За ідею автору", MB_OK);
+                
                 controller.Restart();
+            }
+            else
+            {
+                ShellExecute(NULL, L"open", L"https://www.youtube.com/watch?v=oHg5SJYRHA0", NULL, NULL, SW_SHOWNORMAL);
             }
         }
         EndPaint(hWnd, &ps);
@@ -300,7 +317,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 
 
-        InvalidateRect(hWnd, NULL, FALSE);
+        InvalidateRect(hWnd, NULL, TRUE);
         UpdateWindow(hWnd);
     }
     break;

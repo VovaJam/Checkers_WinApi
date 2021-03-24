@@ -14,4 +14,5 @@
 #include <memory.h>
 #include <tchar.h>
 #include <typeinfo>
+#include <shellapi.h>
 
