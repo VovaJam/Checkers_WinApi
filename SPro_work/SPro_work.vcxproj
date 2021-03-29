@@ -153,6 +153,7 @@
     <ResourceCompile Include="SPro_work.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="icon1.ico" />
     <Image Include="small.ico" />
     <Image Include="SPro_work.ico" />
   </ItemGroup>

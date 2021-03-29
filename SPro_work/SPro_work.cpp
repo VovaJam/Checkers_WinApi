@@ -10,7 +10,7 @@
 
 // Глобальные переменные:
 HINSTANCE hInst;                                // текущий экземпляр
-WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
+//WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
 WCHAR szWindowClass[MAX_LOADSTRING];            // имя класса главного окна
 
 // Отправить объявления функций, включенных в этот модуль кода:
@@ -30,7 +30,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // TODO: Разместите код здесь.
 
     // Инициализация глобальных строк
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+    //LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_SPROWORK, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
 
@@ -75,12 +75,12 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.cbClsExtra     = 0;
     wcex.cbWndExtra     = 0;
     wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_SPROWORK));
+    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_CHECKER));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground  = CreateSolidBrush(RGB(243, 221, 205));
     wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_SPROWORK);
     wcex.lpszClassName  = szWindowClass;
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_CHECKER));
 
     return RegisterClassExW(&wcex);
 }
@@ -99,8 +99,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Сохранить маркер экземпляра в глобальной переменной
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_MINIMIZEBOX | WS_SYSMENU,
-      CW_USEDEFAULT, CW_USEDEFAULT, 782, 826, nullptr, nullptr, hInstance, nullptr);
+   HWND hWnd = CreateWindowW(szWindowClass, L"Шашки", WS_MINIMIZEBOX | WS_SYSMENU,
+      CW_USEDEFAULT, CW_USEDEFAULT, 782, 835, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -127,8 +127,13 @@ void DrawBoard(HDC hdc, int dx, int dy, int size = 70)
 
     //FillRect(hdc, &BackBoard, BoardBrush);
     Rectangle(hdc, dx, dy, 10 * size + dx, 10 * size + dy);
+    SetBkMode(hdc, TRANSPARENT);
     for (int i = 0; i < 10; i++)
     {
+        CHAR symbol = i + 'A';
+        TextOutA(hdc, size/2 + i * size + dx - 5, dy/2, &symbol, 1);
+        symbol = i + '0';
+        TextOutA(hdc, dx / 2, size / 2 + i * size + dy - 10, &symbol, 1);
         for (int j = 0; j < 10; j++)
         {
             field = { i * size + dx , j * size + dy, (i + 1) * size + dx, (j + 1) * size + dy };
@@ -141,8 +146,7 @@ void DrawBoard(HDC hdc, int dx, int dy, int size = 70)
             {
                 FillRect(hdc, &field, GreenBrush);
             }
-
-            if (board[i][j].state == ATTACKABLE)
+            else if (board[i][j].state == ATTACKABLE)
             {
                 FillRect(hdc, &field, RedBrush);
             }
@@ -154,8 +158,6 @@ void DrawBoard(HDC hdc, int dx, int dy, int size = 70)
     DeleteObject(GreenBrush);
     DeleteObject(RedBrush);
  }
-
-
 
 void DrawChecker(HDC hdc, int x, int y)
 {
@@ -173,31 +175,25 @@ void DrawChecker(HDC hdc, int x, int y)
     }
 
     SelectObject(hdc, Brush1);
-    Ellipse(hdc, 36 + x * 70, 36 + y * 70, 105 + x * 70, 105 + y * 70);
+    Ellipse(hdc, 36 + x * 70, 46 + y * 70, 105 + x * 70, 115 + y * 70);
     SelectObject(hdc, Brush2);
-    Ellipse(hdc, 40 + x * 70, 40 + y * 70, 101 + x * 70, 101 + y * 70);
+    Ellipse(hdc, 40 + x * 70, 50 + y * 70, 101 + x * 70, 111 + y * 70);
     SelectObject(hdc, Brush1);
-    Ellipse(hdc, 42 + x * 70, 42 + y * 70, 99 + x * 70, 99 + y * 70);
+    Ellipse(hdc, 42 + x * 70, 52 + y * 70, 99 + x * 70, 109 + y * 70);
     SelectObject(hdc, Brush2);
-    Ellipse(hdc, 52 + x * 70, 52 + y * 70, 89 + x * 70, 89 + y * 70);
+    Ellipse(hdc, 52 + x * 70, 62 + y * 70, 89 + x * 70, 99 + y * 70);
     SelectObject(hdc, Brush1);
-    Ellipse(hdc, 54 + x * 70, 54 + y * 70, 87 + x * 70, 87 + y * 70);
+    Ellipse(hdc, 54 + x * 70, 64 + y * 70, 87 + x * 70, 97 + y * 70);
 
     if (typeid(*board[x][y].checker) == typeid (King))
     {
         SelectObject(hdc, Brush2);
-        Ellipse(hdc, 54 + x * 70, 54 + y * 70, 87 + x * 70, 87 + y * 70);
+        Ellipse(hdc, 54 + x * 70, 64 + y * 70, 87 + x * 70, 97 + y * 70);
     }
    
     DeleteObject(Brush1);
     DeleteObject(Brush2);
 }
-
-
-
-
-
-
 
 //
 //  ФУНКЦИЯ: WndProc(HWND, UINT, WPARAM, LPARAM)
@@ -213,11 +209,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static HBITMAP hBoardBitmap;
     static POINT userSelect;
+    static POINT lastSelect;
     static Game controller;
     static bool isChoosen;
-    static POINT lastSelect;
+    
 
-    static int dx = 35, dy = 35;
+    static int dx = 35, dy = 45;
     switch (message)
     {
     case WM_COMMAND:
@@ -226,8 +223,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         // Разобрать выбор в меню:
         switch (wmId)
         {
-        case IDM_ABOUT:
-            DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+        case ID_RESTART:
+            if (MessageBox(hWnd, L"Дійсно бажаєте переграти?", L"Переграти партію", MB_YESNO) == IDYES)
+            {
+                controller.Restart();
+                InvalidateRect(hWnd, NULL, TRUE);
+            }
+            else
+                break;
+        
             break;
         case IDM_EXIT:
             DestroyWindow(hWnd);
@@ -270,13 +274,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         { 
             if (MessageBox(hWnd, L"Гра завершена. Бажаєте почати наново?", L"Чудова партія", MB_YESNO) == IDYES)
             {
-                //MessageBox(hWnd, L"Privat: 4149 4991 3092 2337 \nMonobank: 5375 4141 2115 1350", L"За ідею автору", MB_OK);
-                
                 controller.Restart();
+                InvalidateRect(hWnd, NULL, TRUE);
             }
             else
             {
                 ShellExecute(NULL, L"open", L"https://youtu.be/VJCtRXrXkQU", NULL, NULL, SW_SHOWNORMAL);
+                CloseWindow(hWnd);
             }
         }
         EndPaint(hWnd, &ps);
@@ -297,7 +301,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
               controller.Deselect();
               isChoosen = !isChoosen;
         }
-    
             if (userSelect.x < 10 && userSelect.y < 10)
             {
                 if (board[userSelect.x][userSelect.y].checker)
@@ -310,13 +313,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     else
                     {
                         controller.Deselect();
-
                     }
                   
             }
-
-
-
         InvalidateRect(hWnd, NULL, TRUE);
         UpdateWindow(hWnd);
     }
@@ -342,21 +341,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 // Обработчик сообщений для окна "О программе".
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    UNREFERENCED_PARAMETER(lParam);
-    switch (message)
-    {
-    case WM_INITDIALOG:
-        return (INT_PTR)TRUE;
-
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-        {
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
-        }
-        break;
-    }
-    return (INT_PTR)FALSE;
-}
+//INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+//{
+//    UNREFERENCED_PARAMETER(lParam);
+//    switch (message)
+//    {
+//    case WM_INITDIALOG:
+//        return (INT_PTR)TRUE;
+//
+//    case WM_COMMAND:
+//        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+//        {
+//            EndDialog(hDlg, LOWORD(wParam));
+//            return (INT_PTR)TRUE;
+//        }
+//        break;
+//    }
+//    return (INT_PTR)FALSE;
+//}

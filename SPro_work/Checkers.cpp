@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Checkers.h"
-#define IS_DEBUG 1
+#define IS_DEBUG 0
 Cell board[10][10];
 
 bool Cell::isFree()
@@ -127,17 +127,24 @@ void Game::Move(int x1, int y1, int x2, int y2)
 	{
 		int dx = ((x1 - x2) > 0 ? 1 : -1);
 		int dy = ((y1 - y2) > 0 ? 1 : -1);
-		int x = x2 + dx;//(x1 + x2) / length;
-		int y = y2 + dy; // (y1 + y2) / length;
-		if (board[x][y].checker)
-		{
-			amount[board[x][y].checker->color]--;
-			delete board[x][y].checker;
-		}
+		int x = x2;//(x1 + x2) / length;
+		int y = y2; // (y1 + y2) / length;
+	
+			while ((dx + x >= 0 && dx + x < 10) && (dy + y >= 0 && dy + y < 10))
+			{
+				x += dx;
+				y += dy;
+					if (!board[x][y].isFree()) 
+					{
+						amount[board[x][y].checker->color]--;
+						delete board[x][y].checker;
+						board[x][y] = { NONE, nullptr };
+						if (board[x2][y2].checker->canAttack())
+							return;
+						break;
+					}
+			}
 			
-		board[x][y] = { NONE, nullptr };
-		if (board[x2][y2].checker->canAttack())
-			return;	
 	}
 
 	playerColor = !playerColor;
@@ -167,12 +174,14 @@ void Game::Start()
 	playerColor = WHITE;
 #if IS_DEBUG
 
-	amount[BLACK] = 3;
+	amount[BLACK] = 5;
 	amount[WHITE] = 2;
 
 	board[4][5] = { NONE, new King{WHITE, 4, 5} };
 	board[0][1] = { NONE, new Checker{WHITE, 0, 1} };
 	board[7][8] = { NONE, new Checker{BLACK, 7, 8} };
+	board[5][6] = { NONE, new Checker{BLACK, 5, 6} };
+	board[8][1] = { NONE, new Checker{BLACK, 8, 1} };
 	board[1][8] = { NONE, new Checker{BLACK, 1, 8} };
 	board[7][2] = { NONE, new Checker{BLACK, 7, 2} };
 
@@ -207,6 +216,7 @@ void Game::Restart()
 				delete board[i][j].checker;
 				board[i][j].checker = nullptr;
 			}
+	Deselect();
 	Start();
 }
 
@@ -214,23 +224,37 @@ std::vector<Coordinates> King::getAttackablePoints()
 {
 	std::vector<Coordinates> points;
 
-	for (int k = 2; k < 10; k++)
+	for (int dx = -1; dx <= 1; dx += 2)
 	{
-		for (int dx = -1; dx <= 1; dx += 2)
+		for (int dy = -1; dy <= 1; dy += 2)
 		{
-			if (x + k * dx < 0 || x + k * dx > 9) continue;
-			if (!(dx + x >= 0 && dx + x < 10)) continue;
-			for (int dy = -1; dy <= 1; dy += 2)
-			{
-				if (y + k * dy < 0 || y + k * dy > 9) continue;
 
+			for (int k = 2; k < 10; k++)
+			{
+				bool stepFlag = false;
+
+				if (x + k * dx < 0 || x + k * dx > 9) continue;
+				if (!(dx + x >= 0 && dx + x < 10)) continue;
+				if (y + k * dy < 0 || y + k * dy > 9) continue;
 				if (!(dy + y >= 0 && dy + y < 10)) continue;
 
-
-				if (board[x + k * dx][y + k * dy].isFree()
-					&& !board[x + (k - 1) * dx][y + (k - 1) * dy].isFree()
+				if (!board[x + (k - 1) * dx][y + (k - 1) * dy].isFree()
 					&& board[x + (k - 1) * dx][y + (k - 1) * dy].checker->color != color)
-					points.push_back(Coordinates(x + k * dx, y + k * dy));
+				{
+
+					while (board[x + k * dx][y + k * dy].isFree())
+					{
+						if (x + k * dx < 0 || x + k * dx > 9) break;
+						/*if (!(dx + x >= 0 && dx + x < 10)) break;*/
+						if (y + k * dy < 0 || y + k * dy > 9) break;
+						/*if (!(dy + y >= 0 && dy + y < 10)) break;*/
+
+						points.push_back(Coordinates(x + k * dx, y + k * dy));
+						k++;
+					}
+
+					break;
+				}
 			}
 		}
 	}
@@ -248,69 +272,66 @@ std::vector<Coordinates> King::getAttackablePoints()
 			}
 		}*/
 
-		for (int k = 1; k < 10; k++)
-		{
-			for (int dx = -1; dx <= 1; dx += 2)
-			{
-				if (x + k * dx < 0 || x + k * dx > 9) continue;
-				if (!(dx + x >= 0 && dx + x < 10)) continue;
-				for (int dy = -1; dy <= 1; dy += 2)
-				{
-					if (y + k * dy < 0 || y + k * dy > 9) continue;
 
+		for (int dx = -1; dx <= 1; dx += 2)
+		{
+
+			for (int dy = -1; dy <= 1; dy += 2)
+			{
+				for (int k = 1; k < 10; k++)
+				{
+					if (x + k * dx < 0 || x + k * dx > 9) continue;
+					if (!(dx + x >= 0 && dx + x < 10)) continue;
+					if (y + k * dy < 0 || y + k * dy > 9) continue;
 					if (!(dy + y >= 0 && dy + y < 10)) continue;
+
 					if (board[x + k * dx][y + k * dy].isFree())
 						points.push_back(Coordinates(x + k * dx, y + k * dy));
+					else
+						break;
 				}
 			}
 		}
-		//int dy = (color ? -1 : 1); // Исправить для дамки
-
-		//for (int dx = -1; dx <= 1; dx += 2)
-		//{
-		//	
-		//}
 	}
 	return points;
 }
+	
 
 bool King::canAttack()
 {
-	for (int k = 2; k < 10; k++)
+	for (int dx = -1; dx <= 1; dx += 2)
 	{
-		for (int dx = -1; dx <= 1; dx += 2)
-			{
-			if (x + k * dx < 0 || x + k * dx > 9) continue;
-			if (!(dx + x >= 0 && dx + x < 10)) continue;
-				for (int dy = -1; dy <= 1; dy += 2)
-				{
-					if (y + k * dx < 0 || y + k * dx > 9) continue;
-					if (!(dy + y >= 0 && dy + y < 10)) continue;
-					
+		for (int dy = -1; dy <= 1; dy += 2)
+		{
 
-					if (board[x + k * dx][y + k * dy].isFree()
-						&& !board[x + (k - 1) * dx][y + (k - 1) * dy].isFree()
-						&& board[x + (k - 1) * dx][y + (k - 1) * dy].checker->color != color)
+			for (int k = 2; k < 10; k++)
+			{
+				bool stepFlag = false;
+
+				if (x + k * dx < 0 || x + k * dx > 9) continue;
+				if (!(dx + x >= 0 && dx + x < 10)) continue;
+				if (y + k * dy < 0 || y + k * dy > 9) continue;
+				if (!(dy + y >= 0 && dy + y < 10)) continue;
+
+				if (!board[x + (k - 1) * dx][y + (k - 1) * dy].isFree()
+					&& board[x + (k - 1) * dx][y + (k - 1) * dy].checker->color != color)
+				{
+
+					if (board[x + k * dx][y + k * dy].isFree())
+					{
+						if (x + k * dx < 0 || x + k * dx > 9) break;
+						/*if (!(dx + x >= 0 && dx + x < 10)) break;*/
+						if (y + k * dy < 0 || y + k * dy > 9) break;
+						/*if (!(dy + y >= 0 && dy + y < 10)) break;*/
 						return true;
+					}
+
+					break;
 				}
 			}
+		}
 	}
-	
 	return false;
 }
-//{
-//	for ()
-//	{
-//		for ()
-//		{
-//			if (!(dx + x >= 0 && dx + x < 10)) continue;
-//			if (!(2 * dx + x >= 0 && 2 * dx + x < 10)) continue;
-//			if (!(dy + y >= 0 && dy + y < 10)) continue;
-//			if (!(2 * dy + y >= 0 && 2 * dy + y < 10)) continue;
-//
-//			
-//		}
-//	}
-//	return false;
-//}
+
 

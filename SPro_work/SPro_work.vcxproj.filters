@@ -51,5 +51,8 @@
     <Image Include="SPro_work.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+    <Image Include="icon1.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
 </Project>
